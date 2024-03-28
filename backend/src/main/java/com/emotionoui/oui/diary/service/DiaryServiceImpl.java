@@ -98,7 +98,7 @@ public class DiaryServiceImpl implements DiaryService{
         Emotion emotion = Emotion.builder()
                 .dailyDiary(dailyDiary)
                 .emotion("joy")
-                .date(dailyDate)
+                .date(req.getDailyDate())
                 .member(member)
                 .build();
 
@@ -127,7 +127,7 @@ public class DiaryServiceImpl implements DiaryService{
 //        }
 
         // 공유 다이어리일 시 친구들에게 본인 일기 알람 전송
-        alarmService.sendFriendDiary(diary, newDailyDiary.getId(), member);
+        //alarmService.sendFriendDiary(diary, newDailyDiary.getId(), member);
 
         return document.getId().toString();
     }
