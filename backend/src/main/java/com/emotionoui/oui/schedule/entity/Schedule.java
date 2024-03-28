@@ -25,8 +25,7 @@ public class Schedule {
     @Column(name = "schedule_id")
     private Integer scheduleId;
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 

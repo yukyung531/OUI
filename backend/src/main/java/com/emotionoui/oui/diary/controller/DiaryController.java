@@ -12,6 +12,7 @@ import com.emotionoui.oui.diary.exception.NotExitPrivateDiaryException;
 import com.emotionoui.oui.diary.repository.DiaryRepository;
 import com.emotionoui.oui.diary.service.DiaryService;
 import com.emotionoui.oui.member.entity.Member;
+import com.emotionoui.oui.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ public class DiaryController {
 
     private final DiaryService diaryService;
     private final DiaryRepository diaryRepository;
+    private final MemberRepository memberRepository;
 
     // , @AuthenticationPrincipal Member member
     // 일기 게시글 작성하기
@@ -139,4 +141,10 @@ public class DiaryController {
         diaryService.syncDiary(member.getMemberId(), diaryId);
         return ResponseEntity.ok().build();
     }
+//    @GetMapping("/test")
+//    public ResponseEntity<?> testFetch(@AuthenticationPrincipal Member member){
+//        Member member2 = memberRepository.findByEmailFetchJoin(member.getEmail()).orElseThrow(IllegalArgumentException::new);
+//        log.info(member2.getEmotionList().get(0).getEmotion());
+//        return ResponseEntity.ok().build();
+//    }
 }
