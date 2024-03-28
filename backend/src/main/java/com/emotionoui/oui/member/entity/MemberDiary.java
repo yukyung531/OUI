@@ -43,7 +43,7 @@ public class MemberDiary {
     @JoinColumn(name="diary_id")
     private Diary diary;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
     private Member member;
 

@@ -47,6 +47,7 @@ public class DiaryInterceptor implements ChannelInterceptor {
 
         if (StompCommand.SUBSCRIBE.equals(command)) {
             log.info("DiaryInterceptor");
+            log.info(accessor.getDestination());
             String[] destination = accessor.getDestination().split("/");
             log.info(destination[destination.length - 1].replace("diaryId", ""));
             setValue(accessor, "dailyId", Long.parseLong(destination[destination.length - 1].replace("diary", "")));
@@ -57,27 +58,22 @@ public class DiaryInterceptor implements ChannelInterceptor {
             String authToken = accessor.getFirstNativeHeader("Authorization");
 
             if (authToken != null && authToken.startsWith("Bearer ")) {
-                log.info("토큰 null 아니면 여기로 옴");
                 String jwtToken = authToken.substring(7);
                 try {
-                    log.info("try 시작부분");
                     // 0 : 유효 , 1 : 만료 , 2 : 이상한 토큰
                     if (jwtUtil.isExpired(jwtToken) == 1) {
-                        log.info("만료되면 찍히는 로그");
                         throw new JwtException("토큰이 만료되었습니다.");
                     }
-                    log.info("만료 안되면 찍히는 로그");
                     String email = jwtUtil.getEmail(jwtToken);
                     log.info("email: " + email);
                     Member member = memberRepository.findByEmail(email)
                             .orElseThrow(IllegalArgumentException::new);
-
-                    log.info("야 너 어딨어 " + member.getMemberId());
-
                     // 스프링 시큐리티 인증 토큰 생성
                     Authentication authentication = new UsernamePasswordAuthenticationToken(member, null, member.getAuthorities());
                     // 사용자 정보를 메시지 헤더에 저장
+                    log.info(authentication.getPrincipal().toString());
                     accessor.setUser(authentication);
+
                 } catch (JwtException e) {
                     // Exception 써야해요 Exception 좀 쓰자...
                 }

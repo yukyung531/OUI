@@ -24,7 +24,7 @@ public class Preference {
     @Column(name = "preference_id")
     private Integer preferenceId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
