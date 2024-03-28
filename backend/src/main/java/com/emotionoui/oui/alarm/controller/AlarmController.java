@@ -29,6 +29,7 @@ public class AlarmController {
 
     private final AlarmService alarmService;
 
+    @GetMapping
     // 전체 알림리스트 가져오기
     public ResponseEntity<?> searchAlarms(@AuthenticationPrincipal Member member){
         int memberId = member.getMemberId();

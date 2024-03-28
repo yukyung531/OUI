@@ -29,7 +29,7 @@ public class MemberAlarm {
     @JoinColumn(name = "alarm_id", nullable = false)
     private Alarm alarm;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 

@@ -23,7 +23,8 @@ public class Preference {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "preference_id")
     private Integer preferenceId;
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 

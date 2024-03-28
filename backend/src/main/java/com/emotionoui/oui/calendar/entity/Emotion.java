@@ -19,7 +19,7 @@ public class Emotion {
     @Column(name = "emotion_id")
     private Integer emotionId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
