@@ -1,4 +1,4 @@
-//package com.emotionoui.oui.diary.config;
+ //package com.emotionoui.oui.diary.config;
 //
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;

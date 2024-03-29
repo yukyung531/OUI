@@ -10,4 +10,6 @@ public interface MusicService {
     void uploadSongMeta(List<SongReq> songList);
     String searchMusicURI(String artistName, String songName);
     void uploadSong() throws IOException;
+    String searchYoutube(String songName, String artistName) throws IOException;
+
 }
