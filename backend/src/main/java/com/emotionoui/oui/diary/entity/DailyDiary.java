@@ -22,6 +22,7 @@ public class DailyDiary {
     @JoinColumn(name="diary_id")
     private Diary diary;
 
+    @Temporal(TemporalType.DATE)
     @Column(name="daily_date")
     private Date dailyDate;
 
@@ -45,6 +46,7 @@ public class DailyDiary {
         this.diary = diary;
         this.mongoId = mongoId;
         this.dailyDate = dailyDate;
+        this.isDeleted = 0;
         diary.getDailyDiaryList().add(this);
     }
 

@@ -15,7 +15,7 @@ public interface AlarmService {
 
     public void createDeviceToken(Member member, String deviceToken);
     public void inviteDiary(List<String> emails, Integer diaryId, String createrNickname);
-    public void sendFriendForcing(Integer diaryId, String pusherNickname, Integer memberId, Date date);
+    public void sendFriendForcing(Integer diaryId, String pusherNickname, Integer memberId, String date);
     public void sendFriendDiary(Diary diary, Integer dailyId, Member member);
 
 //    public Boolean sendChatMessage(ChatRoom chatRoom, String userId);
@@ -24,9 +24,13 @@ public interface AlarmService {
 
     public List<SearchAlarmsRes> searchAlarmList(Integer memberId);
 
+    public void deleteAlarms(Integer memberId);
+
     public void acceptInvite(Member member, Integer diaryId);
 
     public void refuseInvite(Member member, Integer diaryId);
+
+    public void readAlarm(Member member, Integer alarmId);
 //
 //    public String readMessage(Long notificationId);
 //

@@ -16,7 +16,7 @@ import java.util.List;
 public class MusicCollection {
 
     @Id
-    @Field("id")
+    @Field("_id")
     private ObjectId objectId;
 
     private List<String> song_gn_dtl_gnr_basket;
@@ -43,8 +43,8 @@ public class MusicCollection {
         this.tagName = tagName;
     }
 
-
 //    public void setSpotifyUrl(String uri){
 //        this.spotifyUrl = uri;
 //    }
+
 }

@@ -19,11 +19,11 @@ public class MusicController {
     private final MusicService musicService;
     private final String success = "success";
 
-    @PostMapping("/upload")
-    public String uploadSong(@RequestBody List<SongReq> req){
-        musicService.uploadSongMeta(req);
-        return success;
-    }
+//    @PostMapping("/upload")
+//    public String uploadSong(@RequestBody List<SongReq> req){
+//        musicService.uploadSongMeta(req);
+//        return success;
+//    }
 
     @PostMapping("/uploadSong")
     public String uploadSong() throws IOException {

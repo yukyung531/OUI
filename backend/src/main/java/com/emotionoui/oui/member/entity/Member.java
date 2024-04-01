@@ -2,8 +2,6 @@ package com.emotionoui.oui.member.entity;
 
 import com.emotionoui.oui.alarm.entity.FcmInfo;
 import com.emotionoui.oui.calendar.entity.Emotion;
-import com.emotionoui.oui.member.entity.MemberAlarm;
-import com.emotionoui.oui.member.entity.MemberDiary;
 import com.emotionoui.oui.schedule.entity.Schedule;
 import com.emotionoui.oui.survey.entity.Preference;
 import jakarta.persistence.*;
@@ -38,16 +36,13 @@ public class Member implements UserDetails {
     @Column(name="nickname")
     private String nickname;
 
-    @Column(name="password")
-    private String password;
-
     @Column(name="img")
     private String img;
 
     @CreationTimestamp(source = SourceType.DB)
     @Column(name="regdate", nullable = false)
     private LocalDateTime regdate;
-    
+
     @Column(name="is_deleted", nullable = false)
     private int isDeleted = 0;
 
@@ -59,7 +54,7 @@ public class Member implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return null;
     }
 
     @Override
@@ -87,19 +82,19 @@ public class Member implements UserDetails {
         return isDeleted == 0;
     }
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<MemberAlarm> memberAlarmList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<Preference> preferenceList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<Schedule> scheduleList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<Emotion> emotionList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<MemberDiary> memberDiaryList = new ArrayList<>();
 
     @Setter

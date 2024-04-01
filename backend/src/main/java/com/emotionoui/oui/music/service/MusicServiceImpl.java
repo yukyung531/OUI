@@ -9,7 +9,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
@@ -17,7 +16,6 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -26,11 +24,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import se.michaelthelin.spotify.SpotifyApi;
 
-import javax.swing.text.Document;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -51,13 +48,13 @@ public class MusicServiceImpl implements MusicService{
     @Qualifier("artistNameFilterPattern")
     private final Pattern artistNameFilterPattern;
 
-    private final int RESPONSE_NUM = 5;
-    private final String SPOTIFY_SEARCH_URL = "https://api.spotify.com/v1/search?locale=ko-KR,ko&type=track&market=KR&limit=5&offset=0&q=";
-    private final String ITUNES_SEARCH_URL = "https://itunes.apple.com/search?limit=1&media=music&term=";
-
     // 본인의 YouTube Data API 키로 대체
     @Value("${YOUTUBE_API_KEY}")
     private String API_KEY;
+
+    private final int RESPONSE_NUM = 5;
+    private final String SPOTIFY_SEARCH_URL = "https://api.spotify.com/v1/search?locale=ko-KR,ko&type=track&market=KR&limit=5&offset=0&q=";
+    private final String ITUNES_SEARCH_URL = "https://itunes.apple.com/search?limit=1&media=music&term=";
 
     private final MusicMongoRepository musicMongoRepository;
 
@@ -114,7 +111,6 @@ public class MusicServiceImpl implements MusicService{
         }
         return null;
     }
-
 
     @Override
     public void uploadSong() throws IOException {
@@ -194,131 +190,127 @@ public class MusicServiceImpl implements MusicService{
         musicMongoRepository.saveAll(objects);
     }
 
-
-
-
-
-    @Override
-    public void uploadSongMeta(List<SongReq> songList) {
+//    @Override
+//    public void uploadSongMeta(List<SongReq> songList) {
 //        musicMongoRepository.saveAll(songList.stream()
 //                .map(SongReq::toEntity)
 //                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public String searchMusicURI(String artistName, String songName){
-        ResponseEntity<String> responseEntity = requestMusicURIToSpotifyAPI(artistName, songName);
-
-        int statusCode = responseEntity.getStatusCode().value();
-        if(statusCode/100!=2){
-            log.error("[MusicServiceImpl/searchMusicURI] SpotifyAPI 에러: {}", responseEntity.getBody());
-            throw new MusicException(String.format("SpotifyAPI 에러 %s", responseEntity.getBody()));
-        }
-
-        for(int i=0; i<RESPONSE_NUM; ++i){
-            try{
-                JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-                JsonNode trackRoot = jsonNode.get("tracks").get("items").get(i);
-                Set<String> artistNamefound = trackRoot.get("artists")
-                        .findValuesAsText("name")
-                        .stream().collect(Collectors.toSet());
-                String songNamefound = trackRoot.get("name").asText();
-                String spotifyURI = trackRoot.get("uri").asText();
-
-                if (!songNamefound.contains(songName) && !artistNamefound.stream().anyMatch((anf->artistName.contains(anf)))){
-                    continue;
-                }
-                return spotifyURI;
-            } catch(JsonProcessingException je){
-                log.error("[MusicServiceImpl/searchMusicURI] json parsing 에러: {}", je.getMessage());
-                throw new MusicException(String.format("json parsing 에러: %s", je.getMessage()));
-            }
-        }
-        //throw new MusicException("노래명과 가수명에 해당하는 spotify uri가 존재하지 않습니다.");
-        return null;
-    }
-
-    private String getEngSongName(String artistName, String songName){
-        ResponseEntity<String> responseEntity = requestEngSongNameToiTunesAPI(artistName, songName);
-
-        try{
-            JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            JsonNode trackRoot = jsonNode.get("results").get(0);
-            String songNamefound = trackRoot.get("trackName").asText();
-            return songNamefound;
-        } catch(JsonProcessingException je){
-            log.error("[MusicServiceImpl/getEngSongName] json parsing 에러: {}", je.getMessage());
-            throw new MusicException(String.format("json parsing 에러: %s", je.getMessage()));
-        }
-    }
-
-    private ResponseEntity<String> requestEngSongNameToiTunesAPI(String artistName, String songName){
-        HttpHeaders headers = new HttpHeaders();
-        //headers.add("Content-type", "application/json");
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
-        StringBuilder urlBuilder = new StringBuilder();
-        String artistNameEncoded = artistName.replace(" ", "+");
-        String songNameEncoded = songName.replace(" ", "+");
-
-        urlBuilder.append(ITUNES_SEARCH_URL)
-                .append(artistNameEncoded)
-                .append("+")
-                .append(songNameEncoded);
-        String url = urlBuilder.toString();
-
-        log.info("[MusicServiceImpl/requestEngSongNameToiTunesAPI] request url: {}", url);
-
-        try{
-            ResponseEntity<String> responseEntity
-                    = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
-            //log.info("[MusicServiceImpl/requestEngSongNameToiTunesAPI] response: {}", responseEntity.getBody());
-            return responseEntity;
-        } catch(HttpClientErrorException e){
-            log.error("[MusicServiceImpl/getEngSongName] iTunesAPI 에러: {}", e.getMessage());
-            throw new MusicException("[MusicServiceImpl/getEngSongName] iTunesAPI 에러");
-        }
-
-    }
-
-    private ResponseEntity<String> requestMusicURIToSpotifyAPI(String artistName, String songName){
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + spotifyApi.getAccessToken());
-        headers.add("Host", "api.spotify.com");
-        headers.add("Content-type", "application/json");
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
-        StringBuilder urlBuilder = new StringBuilder();
-
-
-        String songNameEncoded = songName.substring(0);
-        try{
-            songNameEncoded = getEngSongName(artistName, songName);
-        } catch(MusicException e){
-            log.info("[MusicServieImpl/getEngSongName] {}", e.getMessage());
-        } finally {
-            songNameEncoded = songNameEncoded.replace(" ", "%20");
-        }
-        String songNameKorEncoded = songName.replace(" ", "%20");
-
-        // TWS (투어스) -> TWS, 임창정 -> 임창정, 비비 (BIBI) -> BIBI
-        String artistNameEncoded = artistName.substring(0);
-        if(englishFinderPattern.matcher(artistNameEncoded).find()){
-            artistNameEncoded = artistNameFilterPattern.matcher(artistNameEncoded).replaceAll("").trim();
-        }
-        artistNameEncoded = artistNameEncoded.replace(" ", "%20");
-        urlBuilder.append(SPOTIFY_SEARCH_URL)
-                .append(songNameEncoded)
-                .append("%20track:")
-                .append(songNameKorEncoded)
-                .append("%20artist:")
-                .append(artistNameEncoded);
-        String url = urlBuilder.toString();
-        log.info("[MusicServiceImpl/requestMusicURIToSpotifyAPI] request url: {}", url);
-
-        ResponseEntity<String> responseEntity
-                = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
-        //log.info("[MusicServiceImpl/requestMusicURIToSpotifyAPI] response: {}", responseEntity.getBody());
-        return responseEntity;
-    }
+//    }
+//
+//    @Override
+//    public String searchMusicURI(String artistName, String songName){
+//        ResponseEntity<String> responseEntity = requestMusicURIToSpotifyAPI(artistName, songName);
+//
+//        int statusCode = responseEntity.getStatusCode().value();
+//        if(statusCode/100!=2){
+//            log.error("[MusicServiceImpl/searchMusicURI] SpotifyAPI 에러: {}", responseEntity.getBody());
+//            throw new MusicException(String.format("SpotifyAPI 에러 %s", responseEntity.getBody()));
+//        }
+//
+//        for(int i=0; i<RESPONSE_NUM; ++i){
+//            try{
+//                JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
+//                JsonNode trackRoot = jsonNode.get("tracks").get("items").get(i);
+//                Set<String> artistNamefound = trackRoot.get("artists")
+//                        .findValuesAsText("name")
+//                        .stream().collect(Collectors.toSet());
+//                String songNamefound = trackRoot.get("name").asText();
+//                String spotifyURI = trackRoot.get("uri").asText();
+//
+//                if (!songNamefound.contains(songName) && !artistNamefound.stream().anyMatch((anf->artistName.contains(anf)))){
+//                    continue;
+//                }
+//                return spotifyURI;
+//            } catch(JsonProcessingException je){
+//                log.error("[MusicServiceImpl/searchMusicURI] json parsing 에러: {}", je.getMessage());
+//                throw new MusicException(String.format("json parsing 에러: %s", je.getMessage()));
+//            }
+//        }
+//        //throw new MusicException("노래명과 가수명에 해당하는 spotify uri가 존재하지 않습니다.");
+//        return null;
+//    }
+//
+//    private String getEngSongName(String artistName, String songName){
+//        ResponseEntity<String> responseEntity = requestEngSongNameToiTunesAPI(artistName, songName);
+//
+//        try{
+//            JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
+//            JsonNode trackRoot = jsonNode.get("results").get(0);
+//            String songNamefound = trackRoot.get("trackName").asText();
+//            return songNamefound;
+//        } catch(JsonProcessingException je){
+//            log.error("[MusicServiceImpl/getEngSongName] json parsing 에러: {}", je.getMessage());
+//            throw new MusicException(String.format("json parsing 에러: %s", je.getMessage()));
+//        }
+//    }
+//
+//    private ResponseEntity<String> requestEngSongNameToiTunesAPI(String artistName, String songName){
+//        HttpHeaders headers = new HttpHeaders();
+//        //headers.add("Content-type", "application/json");
+//        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+//
+//        StringBuilder urlBuilder = new StringBuilder();
+//        String artistNameEncoded = artistName.replace(" ", "+");
+//        String songNameEncoded = songName.replace(" ", "+");
+//
+//        urlBuilder.append(ITUNES_SEARCH_URL)
+//                .append(artistNameEncoded)
+//                .append("+")
+//                .append(songNameEncoded);
+//        String url = urlBuilder.toString();
+//
+//        log.info("[MusicServiceImpl/requestEngSongNameToiTunesAPI] request url: {}", url);
+//
+//        try{
+//            ResponseEntity<String> responseEntity
+//                    = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+//            //log.info("[MusicServiceImpl/requestEngSongNameToiTunesAPI] response: {}", responseEntity.getBody());
+//            return responseEntity;
+//        } catch(HttpClientErrorException e){
+//            log.error("[MusicServiceImpl/getEngSongName] iTunesAPI 에러: {}", e.getMessage());
+//            throw new MusicException("[MusicServiceImpl/getEngSongName] iTunesAPI 에러");
+//        }
+//
+//    }
+//
+//    private ResponseEntity<String> requestMusicURIToSpotifyAPI(String artistName, String songName){
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Authorization", "Bearer " + spotifyApi.getAccessToken());
+//        headers.add("Host", "api.spotify.com");
+//        headers.add("Content-type", "application/json");
+//        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+//
+//        StringBuilder urlBuilder = new StringBuilder();
+//
+//
+//        String songNameEncoded = songName.substring(0);
+//        try{
+//            songNameEncoded = getEngSongName(artistName, songName);
+//        } catch(MusicException e){
+//            log.info("[MusicServieImpl/getEngSongName] {}", e.getMessage());
+//        } finally {
+//            songNameEncoded = songNameEncoded.replace(" ", "%20");
+//        }
+//        String songNameKorEncoded = songName.replace(" ", "%20");
+//
+//        // TWS (투어스) -> TWS, 임창정 -> 임창정, 비비 (BIBI) -> BIBI
+//        String artistNameEncoded = artistName.substring(0);
+//        if(englishFinderPattern.matcher(artistNameEncoded).find()){
+//            artistNameEncoded = artistNameFilterPattern.matcher(artistNameEncoded).replaceAll("").trim();
+//        }
+//        artistNameEncoded = artistNameEncoded.replace(" ", "%20");
+//        urlBuilder.append(SPOTIFY_SEARCH_URL)
+//                .append(songNameEncoded)
+//                .append("%20track:")
+//                .append(songNameKorEncoded)
+//                .append("%20artist:")
+//                .append(artistNameEncoded);
+//        String url = urlBuilder.toString();
+//        log.info("[MusicServiceImpl/requestMusicURIToSpotifyAPI] request url: {}", url);
+//
+//        ResponseEntity<String> responseEntity
+//                = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+//        //log.info("[MusicServiceImpl/requestMusicURIToSpotifyAPI] response: {}", responseEntity.getBody());
+//        return responseEntity;
+//    }
 }

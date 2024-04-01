@@ -33,9 +33,6 @@ public class DailyDiaryCollection {
     // 일기 꾸미기 내용
     private String decoration;
 
-    // 삭제 유무
-    private Integer isDeleted;
-
     // 텍스트 기반 감정분석 결과
     private EmotionClass emotion;
 
@@ -48,12 +45,13 @@ public class DailyDiaryCollection {
     // 작성자 닉네임
     private String nickname;
 
+
+
     @Builder
-    public DailyDiaryCollection(Integer diaryId, Integer memberId, String content, Integer isDeleted,String nickname){
+    public DailyDiaryCollection(Integer diaryId, Integer memberId, String content, String nickname){
         this.diaryId = diaryId;
         this.memberId = memberId;
         this.content = content;
-        this.isDeleted = isDeleted;
         this.nickname = nickname;
     }
 }

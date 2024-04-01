@@ -62,7 +62,7 @@ public class AlarmServiceImpl implements AlarmService{
 
     private final ObjectMapper objectMapper;
 
-    // 알림 리스트
+    // 알림 리스트 보내기
     public List<SearchAlarmsRes> searchAlarmList(Integer memberId) {
         List<MemberAlarm> memberAlarms = memberAlarmRepository.findByMemberId(memberId);
         List<SearchAlarmsRes> searchAlarmsResList = new ArrayList<>();
@@ -74,11 +74,21 @@ public class AlarmServiceImpl implements AlarmService{
                     .alarmContentType(alarm.getType())
                     .title(alarm.getTitle())
                     .content(alarm.getContent())
+                    .diaryId(memberAlarm.getDiary().getId())
+                    .link(alarm.getLink())
                     .build();
             searchAlarmsResList.add(searchAlarmsRes);
         }
 
         return searchAlarmsResList;
+    }
+
+    // 알림 전체 삭제하기
+    public void deleteAlarms(Integer memberId){
+        List<MemberAlarm> memberAlarms = memberAlarmRepository.findByMemberId(memberId);
+
+        for (MemberAlarm memberAlarm : memberAlarms)
+            memberAlarm.updateIsDeleted(1);
     }
 
     @Override
@@ -111,6 +121,16 @@ public class AlarmServiceImpl implements AlarmService{
     public void refuseInvite(Member member, Integer diaryId) {
         // memberAlarm DB 에서 삭제
         querydslRepositoryCustom.deleteAlarmByMemberIdAndDiaryId(member, diaryId);
+    }
+
+    @Override
+    public void readAlarm(Member member, Integer alarmId) {
+        Optional<MemberAlarm> getAlarm = memberAlarmRepository.findMemberAlarmByMemberAndAlarm_Id(member,alarmId);
+        if(getAlarm.isPresent()){
+            MemberAlarm alarm = getAlarm.get();
+            alarm.setIsDeleted(1);
+            memberAlarmRepository.save(alarm);
+        }
     }
 
 //    // 알림 읽음 표시
@@ -170,8 +190,8 @@ public class AlarmServiceImpl implements AlarmService{
         String title, content, link;
         title = "공유 다이어리 초대";
         content = "'" + createrNickname + "'님이 '" + diaryName + "' 다이어리에 초대했어요.";
-        // 알림창으로 이동해야 함
-        link = "http://localhost:8080/alarm/mainPage";
+        // 알림창이 있는 메인페이지로 이동
+        link = "http://localhost:3000/main";
 
         List<String> deviceTokens = new ArrayList<>();
 
@@ -179,6 +199,7 @@ public class AlarmServiceImpl implements AlarmService{
                 .type(AlarmContentType.Invite)
                 .title(title)
                 .content(content)
+                .link(link)
                 .build();
 
         alarmRepository.save(alarm);
@@ -205,18 +226,21 @@ public class AlarmServiceImpl implements AlarmService{
     }
 
     // FriendForcing: 친구가 일기 작성 요청하기(재촉하기)
-    public void sendFriendForcing(Integer diaryId, String pusherNickname, Integer memberId, Date date){
+    public void sendFriendForcing(Integer diaryId, String pusherNickname, Integer memberId, String date){
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(IllegalArgumentException::new);
         String diaryName = diary.getName();
-        String day = date.toString();
+        String[] dateSplit = date.split("-");
+        // 월과 일에 어색하게 0이 들어가는 부분 삭제
+        dateSplit[1] = dateSplit[1].replace("0", "");
+        if(dateSplit[2].charAt(0)=='0')
+            dateSplit[2] = dateSplit[2].replace("0", "");
 
         String title, content, link;
         title = "너 오늘 일기 안 써?!";
-//        content = "'" + diaryName + "' 다이어리에서 '" + pusherNickname + "'님이 " + day + " 일기 쓰기를 재촉했어요!";
-        content = "'" + diaryName + "' 다이어리에서 '" + pusherNickname + "'님이 일기 쓰기를 재촉했어요!";
-        // 캘린더로 이동해야 함
-        link = "http://localhost:8080/alarm/mainPage";
+        content = "'" + diaryName + "' 다이어리에서 '" + pusherNickname + "'님이 " + dateSplit[1] + "월 " + dateSplit[2] + "일 일기 쓰기를 재촉했어요!";
+        // 캘린더로 이동
+        link = "http://localhost:3000/calendar/" + diaryId;
 
         Alarm alarm = Alarm.builder()
                 .type(AlarmContentType.FriendForcing)
@@ -262,8 +286,8 @@ public class AlarmServiceImpl implements AlarmService{
         String title, content, link;
         title = diaryName + " 다이어리";
         content = "'" + member.getNickname() + "' 친구가 일기를 작성했어요~";
-        // 일기쓴 곳으로 이동해야 함
-        link = "http://localhost:8080/alarm/mainPage";
+        // 일기 작성 페이지로 이동
+        link = "http://localhost:3000/diary/" + dailyId;
 
         List<String> deviceTokens = new ArrayList<>();
 
@@ -271,6 +295,7 @@ public class AlarmServiceImpl implements AlarmService{
                 .type(AlarmContentType.FriendDiary)
                 .title(title)
                 .content(content)
+                .link(link)
                 .build();
 
         alarmRepository.save(alarm);
