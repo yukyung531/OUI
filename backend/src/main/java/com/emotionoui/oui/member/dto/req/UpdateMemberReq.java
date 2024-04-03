@@ -10,9 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class UpdateMemberReq {
     private String memberNickname;
+    private String preference;
     private MultipartFile ImgUrl;
 
-    public UpdateMemberReq(String memberNickname, MultipartFile imgUrl) {
+    public UpdateMemberReq(String memberNickname, String preference, MultipartFile imgUrl) {
+        this.preference = preference;
         this.memberNickname = memberNickname;
         ImgUrl = imgUrl;
     }

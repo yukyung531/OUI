@@ -50,13 +50,13 @@ public class MemberController {
      */
     @PutMapping(consumes = "multipart/form-data")
     public ResponseEntity<Void> updateMember(@AuthenticationPrincipal Member member,
-         @RequestPart(required = false) MultipartFile file, @RequestParam String memberNickname){
+         @RequestPart(required = false) MultipartFile file, @RequestParam String memberNickname, @RequestPart String preference){
         UpdateMemberReq updateMemberReq;
         if(file == null){
             updateMemberReq = new UpdateMemberReq(memberNickname);
         }
         else{
-            updateMemberReq = new UpdateMemberReq(memberNickname, file);
+            updateMemberReq = new UpdateMemberReq(memberNickname, preference, file);
         }
         memberService.updateMember(member, updateMemberReq);
         return ResponseEntity.ok().build();
