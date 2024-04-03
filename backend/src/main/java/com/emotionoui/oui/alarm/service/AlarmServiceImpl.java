@@ -74,6 +74,9 @@ public class AlarmServiceImpl implements AlarmService{
         List<SearchAlarmsRes> searchAlarmsResList = new ArrayList<>();
 
         for (MemberAlarm memberAlarm : memberAlarms) {
+            if(memberAlarm.getIsDeleted() == 1){
+                continue;
+            }
             Alarm alarm = memberAlarm.getAlarm();
             SearchAlarmsRes searchAlarmsRes = SearchAlarmsRes.builder()
                     .alarmId(alarm.getId())
@@ -94,7 +97,10 @@ public class AlarmServiceImpl implements AlarmService{
         List<MemberAlarm> memberAlarms = memberAlarmRepository.findByMemberId(memberId);
 
         for (MemberAlarm memberAlarm : memberAlarms)
+        {
             memberAlarm.updateIsDeleted(1);
+        }
+        memberAlarmRepository.flush();
     }
 
     @Override
@@ -182,7 +188,7 @@ public class AlarmServiceImpl implements AlarmService{
             memberAlarmRepository.save(memberAlarm);
 
             // test용
-//            deviceTokens.add("eCKbs2zkGtXCXhHZh_KGnb:APA91bF5LuFA_AumHn330BdsSMHafPz8uTWe-Ku3Jgma-VX4HWF7D0rLqIn1TlEUItbphs4wopekhFT2WtRjBfopss74rhvH2CqJbr72G3nxZerwhAc8Hu0JJUVYHdZwH6JwVknQVaTz");
+//            deviceTokens.add("d6NKL21rY1BlJ2ruRKtdjp:APA91bFRbLivwJhERQ52XEDjSBnVx5i7TomYRBHi3nkn7iBncAUS8nwjd2UjhBXJ5okSZMoC0ARGQvF0qfLKSSd4BtaI4Mf7aofBNuMxE7tfgCD3Eh2KdWRoMI_E72GcOG6aSKxXC_BT");
             deviceTokens.add(member.getFcmInfo().getDeviceToken());
         }
 
