@@ -1,4 +1,4 @@
- package com.emotionoui.oui.auth.controller;
+package com.emotionoui.oui.auth.controller;
 
 import com.emotionoui.oui.auth.dto.res.KakaoLoginRes;
 import com.emotionoui.oui.auth.exception.LoginFailureException;
