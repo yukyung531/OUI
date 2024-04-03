@@ -87,9 +87,6 @@ cloud:
       auto: false
 server:
   servlet:
-    session:
-      cookie:
-        same-site: none
     encoding:
       charset: UTF-8
       enabled: true

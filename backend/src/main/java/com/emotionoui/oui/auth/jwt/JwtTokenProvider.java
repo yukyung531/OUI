@@ -18,8 +18,8 @@ public class JwtTokenProvider {
 
     private final JwtUtil jwtUtil;
 
-    private Long accessTokenExpireTime = 1000 * 5L; // 15초
-//    private Long accessTokenExpireTime = 1000 * 60 * 60L; // 1시간
+    //    private Long accessTokenExpireTime = 1000 * 15L; // 15초
+    private Long accessTokenExpireTime = 1000 * 60 * 60L; // 1시간
 
     private Long refreshTokenExpireTime = 1000 * 60 * 60 * 24 * 3L; // 3일
     @Autowired
@@ -62,7 +62,7 @@ public class JwtTokenProvider {
     public void createRefreshTokenCookie(String refreshToken, HttpServletResponse response) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-//        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
         // 쿠키 만료 시간 설정 ( 3일 )
         refreshTokenCookie.setMaxAge(3 * 24 * 60 * 60);
