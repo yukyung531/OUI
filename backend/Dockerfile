@@ -1,4 +1,4 @@
-FROM gradle:8.6.0-jdk17 as builder
+ FROM gradle:8.6.0-jdk17 as builder
 WORKDIR /build
 
 # 그래들 파일이 변경되었을 때만 새롭게 의존패키지 다운로드 받게함.
@@ -17,7 +17,7 @@ WORKDIR /app
 COPY --from=builder /build/build/libs/oui.backend-0.0.1-SNAPSHOT.jar .
 
 EXPOSE 8080
-ENV TZ Asia/Seoul
+ENV TZ Asia/Seoult
 # root 대신 nobody 권한으로 실행
 USER nobody
 ENTRYPOINT [                                                \
