@@ -28,6 +28,7 @@ public class DiaryEmotionRes {
     public static DiaryEmotionRes of(Member member, Map<String, List<EmotionClass>> others, List<EmotionClass> personal){
 
         String my = member.getNickname();
+        Integer Id = member.getMemberId();
         HashMap<String, Double> myEmotionSum = new HashMap<>();
         HashMap<String, Double> myPersonalEmotion = calculate(personal);
         List<DiaryMemberRes> memberResList = new ArrayList<>();

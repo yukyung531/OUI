@@ -20,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -158,10 +159,21 @@ public class AuthController {
     @PostMapping("/token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         // 쿠키에서 refreshToken 추출
+        log.info("Request Method: " + request.getMethod());
+        log.info("Request URI: " + request.getRequestURI());
+
+        // 모든 헤더 로깅
+        Collections.list(request.getHeaderNames())
+                .forEach(headerName ->
+                        log.info(headerName + ": " + Collections.list(request.getHeaders(headerName)))
+                );
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
+
         if (cookies != null) {
+            log.info("쿠키널아님");
             for (Cookie cookie : cookies) {
+                log.info(cookie.toString());
                 if (cookie.getName().equals("refreshToken")) {
                     refreshToken = cookie.getValue();
                     break; // refreshToken을 찾았으므로 반복 종료
