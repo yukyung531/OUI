@@ -62,7 +62,7 @@ public class JwtTokenProvider {
     public void createRefreshTokenCookie(String refreshToken, HttpServletResponse response) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
+//        refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
         // 쿠키 만료 시간 설정 ( 3일 )
         refreshTokenCookie.setMaxAge(3 * 24 * 60 * 60);
