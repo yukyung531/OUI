@@ -9,6 +9,7 @@ import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 
 
+
 /**
  * QDiaryTemplate is a Querydsl query type for DiaryTemplate
  */

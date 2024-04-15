@@ -4,6 +4,7 @@
 // import { initializeApp } from'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 // import { getMessaging, getToken } from'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
 
+
 importScripts("https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js");
 

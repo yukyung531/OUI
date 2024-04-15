@@ -10,6 +10,7 @@ import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
 
 
+
 /**
  * QDailyDiary is a Querydsl query type for DailyDiary
  */

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 
+
 @Data
 public class SearchAlarmsRes {
     private Integer alarmId;

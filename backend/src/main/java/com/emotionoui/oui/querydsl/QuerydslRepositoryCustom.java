@@ -6,6 +6,7 @@ import com.emotionoui.oui.member.entity.Member;
 import java.util.Date;
 import java.util.List;
 
+
 public interface QuerydslRepositoryCustom {
 
     List<SearchDiaryListRes> findDiariesByMemberId(int memberId);

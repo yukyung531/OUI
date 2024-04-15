@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+
 public interface DiaryService {
     String createDailyDiary(CreateDailyDiaryReq req, Member member) throws IOException, ExecutionException, InterruptedException;
     Integer updateDailyDiary(CreateDailyDiaryReq req, Integer dailyId);

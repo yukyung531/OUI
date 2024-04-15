@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.util.List;
 
+
 @Data
 public class UpdateDiarySettingReq {
     // 다이어리 이름

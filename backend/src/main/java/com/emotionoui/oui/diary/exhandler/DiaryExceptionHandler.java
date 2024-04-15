@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
 @RestControllerAdvice(basePackages = "com.emotionoui.oui.diary")
 public class DiaryExceptionHandler {
     private void makeErrorMessage(StringBuilder errorMessage, Exception e) {

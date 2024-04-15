@@ -10,6 +10,7 @@ import se.michaelthelin.spotify.SpotifyApi;
 import java.io.IOException;
 import java.util.List;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/music")

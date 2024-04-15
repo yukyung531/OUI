@@ -7,6 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 
+
 @PropertySource("classpath:application.yml")
 @Configuration
 public class SpotifyConfig {

@@ -2,6 +2,7 @@ package com.emotionoui.oui.alarm.dto.req;
 
 import lombok.Getter;
 import lombok.Setter;
+
 @Getter
 @Setter
 public class AlarmTestReq {

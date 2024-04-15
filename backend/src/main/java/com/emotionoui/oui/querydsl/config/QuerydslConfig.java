@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 /**
  * Querydsl을 사용하기 위한 설정
  */

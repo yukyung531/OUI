@@ -7,6 +7,7 @@ import se.michaelthelin.spotify.exceptions.detailed.NotFoundException;
 
 import java.util.List;
 
+
 public interface MainService {
     Integer createShareDiary(Member member, CreateShareDiaryReq createShareDiaryReq);
 

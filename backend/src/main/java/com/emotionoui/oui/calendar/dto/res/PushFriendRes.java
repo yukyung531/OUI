@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+
 @Data
 public class PushFriendRes {
     private Integer memberId;

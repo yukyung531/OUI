@@ -1,5 +1,6 @@
 package com.emotionoui.oui.alarm.entity;
 
+
 public enum AlarmContentType {
     // Invite: 공유다이어리 초대
     // SystemForcing: 시스템에서 일기 작성 요청하기

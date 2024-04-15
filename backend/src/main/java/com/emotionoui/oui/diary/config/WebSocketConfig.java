@@ -1,5 +1,6 @@
 package com.emotionoui.oui.diary.config;
 
+
 import com.emotionoui.oui.diary.interceptor.DiaryInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

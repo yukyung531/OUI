@@ -1,5 +1,6 @@
 package com.emotionoui.oui.member.repository;
 
+
 import com.emotionoui.oui.member.entity.Member;
 import com.emotionoui.oui.schedule.entity.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;

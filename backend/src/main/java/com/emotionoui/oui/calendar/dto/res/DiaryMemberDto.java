@@ -4,6 +4,7 @@ import com.emotionoui.oui.member.entity.Member;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
+
 @Builder
 public class DiaryMemberDto {
 

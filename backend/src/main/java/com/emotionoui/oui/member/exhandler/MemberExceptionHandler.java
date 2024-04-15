@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
 @RestControllerAdvice(basePackages = {"com.emotionoui.oui.member","com.emotionoui.oui.main"})
 public class MemberExceptionHandler {
     private void makeErrorMessage(StringBuilder errorMessage, Exception e) {

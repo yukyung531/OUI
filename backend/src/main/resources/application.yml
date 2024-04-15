@@ -105,3 +105,4 @@ openai:
   api:
     key: ${OPEN_API_KEY}
     url: ${OPEN_API_URI}
+    
